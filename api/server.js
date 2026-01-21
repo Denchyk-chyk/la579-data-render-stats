@@ -61,6 +61,39 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
+// Запис логів активності
+app.post("/api/log", async (req, res) => {
+  const { action } = req.body;
+
+  if (!action) {
+    return res.status(400).json({ error: "Action is required" });
+  }
+
+  try {
+    await pool.query("INSERT INTO activity_logs (action) VALUES ($1)", [
+      action,
+    ]);
+    res.sendStatus(201);
+  } catch (err) {
+    console.error("Log error:", err);
+    res.status(500).json({ error: "Failed to log action" });
+  }
+});
+
+// Отримання статистики для Chart.js
+app.get("/api/stats", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT action, COUNT(*) as count FROM activity_logs GROUP BY action",
+    );
+    // Повертаємо дані у форматі: [{ action: 'login', count: '10' }, ...]
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Stats error:", err);
+    res.status(500).json({ error: "DB Error" });
+  }
+});
+
 // Динамічний порт для хмари
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
