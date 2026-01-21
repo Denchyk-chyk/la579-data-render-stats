@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Аналітика активності</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .container {
+        width: 80%;
+        max-width: 800px;
+        margin-top: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Статистика дій користувачів</h2>
+
+    <div class="container">
+      <canvas id="activityChart"></canvas>
+    </div>
+
+    <script>
+      async function loadStats() {
+        try {
+          // Запит до твого API на Render
+          const response = await fetch(
+            "https://твій-проект.onrender.com/api/stats",
+          );
+          const data = await response.json();
+
+          // Підготовка даних для графіка
+          const labels = data.map((item) => item.action);
+          const counts = data.map((item) => item.count);
+
+          const ctx = document.getElementById("activityChart").getContext("2d");
+
+          new Chart(ctx, {
+            type: "bar",
+            data: {
+              labels: labels,
+              datasets: [
+                {
+                  label: "Кількість подій",
+                  data: counts,
+                  backgroundColor: "rgba(54, 162, 235, 0.5)",
+                  borderColor: "rgba(54, 162, 235, 1)",
+                  borderWidth: 1,
+                },
+              ],
+            },
+            options: {
+              scales: {
+                y: { beginAtZero: true },
+              },
+            },
+          });
+        } catch (error) {
+          console.error("Помилка завантаження статистики:", error);
+        }
+      }
+
+      loadStats();
+    </script>
+  </body>
+</html>

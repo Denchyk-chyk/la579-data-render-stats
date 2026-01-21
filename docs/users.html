@@ -12,21 +12,42 @@
     <div class="container mt-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Наші користувачі</h2>
-        <a href="index.html" class="btn btn-outline-secondary btn-sm"
-          >← Назад до форми</a
-        >
+        <div>
+          <a href="stats.html" class="btn btn-outline-primary btn-sm me-2"
+            >📊 Статистика</a
+          >
+          <a href="index.html" class="btn btn-outline-secondary btn-sm"
+            >← Назад до форми</a
+          >
+        </div>
       </div>
 
       <div id="usersList" class="row g-3"></div>
     </div>
 
     <script>
+      const API_URL = "https://lab7-render-6jxa.onrender.com/api";
+
+      // Функція для логування подій
+      async function logAction(action) {
+        try {
+          await fetch(`${API_URL}/log`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ action }),
+          });
+        } catch (e) {
+          console.error("Помилка логування:", e);
+        }
+      }
+
       async function loadUsers() {
         const container = document.getElementById("usersList");
         try {
-          const response = await fetch(
-            "https://lab7-render-6jxa.onrender.com/api/users",
-          );
+          // 1. ЛОГУВАННЯ: Перегляд списку користувачів
+          logAction("view_users_list");
+
+          const response = await fetch(`${API_URL}/users`);
           const users = await response.json();
 
           container.innerHTML = users
